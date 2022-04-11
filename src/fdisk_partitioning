@@ -1,0 +1,18 @@
+g # partition table
+n # new partition
+    # default - partition number 1
+    # default - start at beginning of disk
++500M # M=MB boot parttion
+t # Change partition
+1 # partition type 1 (EFI System)
+
+n # new partition
+    # default - partion number 2
+    # default - start immediately after preceding partition
+    # default - extend partition to end of disk
+t # Change partition
+2 # Partition 2
+23 # Partition type 66 (Solaris root)
+
+p # print the in-memory partition table
+w # write the partition table and quit
