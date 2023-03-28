@@ -12,14 +12,28 @@ This arch install system will install arch linux with:
 - Allow users of the `wheel` group to call sudo
 - Enable all services supplied in the config
 
-## Running the installer:
+## Running the default installer:
 On the host:
 ```
-python serve.py <path_to_config>
+python serve.py --config <path_to_config>
 ```
 
 On the new server:
 ```
 curl http://<ip>:<port>/dl.sh | sh
 ./install.sh
+```
+
+## Using custom install scripts
+It is possible to serve your own install directory. When creating the dl.sh script the server will list the content of the whole directory and will make a script which downloads the whole content of the directory.
+
+On the host:
+```
+python serve.py --dir <path_to_directory>
+```
+
+On the new server:
+```
+curl http://<ip>:<port>/dl.sh | sh
+# Your own entrypoint
 ```

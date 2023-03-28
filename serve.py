@@ -13,7 +13,8 @@ import pathlib
 import http.server
 
 config_path = ""
-script_dir = pathlib.Path(__file__).parent.resolve().joinpath('./src')
+default_dir = pathlib.Path(__file__).parent.resolve().joinpath('./src')
+script_dir = ""
 
 class Server(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
@@ -62,12 +63,11 @@ curl http://{connInfo[0]}:{connInfo[1]}/dl.sh | sh
         self.send_response(200)
         self.end_headers()
         connInfo = self.connection.getsockname()
+        files = [file.relative_to(script_dir) for file in script_dir.iterdir() if file.is_file()]
+        filesDownload = '\n'.join([f'curl $host/{file} > {file}' for file in files])
         file = f"""
 host="http://{connInfo[0]}:{connInfo[1]}"
-curl $host/install.sh > install.sh
-curl $host/config.sh > config.sh
-curl $host/systeminit.sh > systeminit.sh
-curl $host/fdisk_partitioning > fdisk_partitioning
+{filesDownload}
 chmod +x *.sh
 echo "Now run './install.sh'"
         """
@@ -81,10 +81,19 @@ echo "Now run './install.sh'"
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Over engineered server to serve install shell scripts for installing arch linux.")
-    parser.add_argument('config', help="Path to the config shell script", nargs="?", type=str, default="./src/config.sh")
+    parser.add_argument('--config', help="Path to the config shell script", nargs="?", type=str, default=None)
+    parser.add_argument('--dir', help="Specify a non standard directory to retrieve the install.sh, fdisk_partitioning and systeminit.sh files", nargs="?", type=str, default=None)
     args = parser.parse_args()
 
-    config_path = args.config
+    if args.dir:
+      script_dir = pathlib.Path(args.dir).resolve(True)
+    else:
+      script_dir = default_dir
+
+    if args.config:
+      config_path = pathlib.Path(args.config).resolve(True)
+    else:
+      config_path = script_dir / "config.sh"
 
     server_address = ('', 8000)
     httpd = http.server.HTTPServer(server_address, Server)
