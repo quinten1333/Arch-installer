@@ -75,10 +75,9 @@ if [ $(question "Do you want unmount and exit" "y,n" "n") != "y" ]; then
 fi
 
 section "Unmounting everything"
-umount /mnt/boot
 umount /mnt
 
 echo "Everything is unmounted."
-if [ $(question "Do you want to shutdown now?" "y,n" "y") == "y" ]; then
-    shutdown now
-fi
+echo "Shutting down in 3 seconds"
+sleep 3
+shutdown now

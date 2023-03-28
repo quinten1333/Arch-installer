@@ -65,4 +65,4 @@ for service in "${services[@]}"; do
 done
 
 section "Setting timezone"
-timedatectl set-timezone "$timezone"
+ln -sf "/usr/share/zoneinfo/$timezone" /etc/localtime

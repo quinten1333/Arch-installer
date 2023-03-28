@@ -37,14 +37,14 @@ section "Setting up boot partition"
 mkdir -p /boot/grub/
 grub-mkconfig -o /boot/grub/grub.cfg
 
-secion "Configuring systemd networking"
-echo > /etc/systemd/network/20-dhcp.network <<EOF
+section "Configuring systemd networking"
+echo "
 [Match]
 Name=en*
 
 [Network]
 DHCP=yes
-EOF
+" > /etc/systemd/network/20-dhcp.network
 
 section "Root password"
 passwd
@@ -71,4 +71,4 @@ for service in "${services[@]}"; do
 done
 
 section "Setting timezone"
-timedatectl set-timezone "$timezone"
+ln -sf "/usr/share/zoneinfo/$timezone" /etc/localtime
