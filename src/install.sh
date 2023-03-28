@@ -65,7 +65,7 @@ mkdir /mnt/boot
 mount "$boot_partition" /mnt/boot
 
 section "Installing"
-pacman-key --init && pacman-key -populate archlinux
+pacman-key --init && pacman-key --populate archlinux
 pacstrap /mnt $packages
 
 section "Generating fstab"
