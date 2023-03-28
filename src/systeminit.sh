@@ -63,3 +63,6 @@ for service in "${services[@]}"; do
     systemctl enable $service
     echo "Enabled: $service"
 done
+
+section "Setting timezone"
+timedatectl set-timezone "$timezone"

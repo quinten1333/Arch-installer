@@ -4,5 +4,6 @@ services=("systemd-networkd" "systemd-resolved" "sshd")
 hostname="archServer"
 
 userGroups="wheel"
+timezone="Europe/Amsterdam"
 
 rootPartition="/dev/xvda1"

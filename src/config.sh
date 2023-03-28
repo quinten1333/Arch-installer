@@ -4,3 +4,4 @@ services=("NetworkManager" "sshd" "qemu-guest-agent" )
 defaultHostname="archServer"
 
 userGroups="wheel"
+timezone="Europe/Amsterdam"
