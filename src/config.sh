@@ -5,3 +5,6 @@ defaultHostname="archServer"
 
 userGroups="wheel"
 timezone="Europe/Amsterdam"
+
+# Feature flags
+autoformat=1

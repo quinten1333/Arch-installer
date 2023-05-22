@@ -38,38 +38,42 @@ function question() { # Question,answers,default
 
 timedatectl set-ntp true
 
-section "fdisk -l"
-fdisk -l | grep "Disk /dev"
+if [[ $autoformat == "1" ]]; then
+  section "fdisk -l"
+  fdisk -l | grep "Disk /dev"
 
-section "Choose disk"
-disk=$(question "What drive do you want to install arch on?" "/dev/sd?,/dev/nvme?" "")
-echo "Disk: $disk"
-if [ "$(question "The drive will be formatted. Are you sure?" "y,n" "n")" != "y" ]; then
-    echo "Okey cancelling the installation."
-    exit 0
+  section "Choose disk"
+  disk=$(question "What drive do you want to install arch on?" "/dev/sd?,/dev/nvme?" "")
+  echo "Disk: $disk"
+  if [ "$(question "The drive will be formatted. Are you sure?" "y,n" "n")" != "y" ]; then
+      echo "Okey cancelling the installation."
+      exit 0
+  fi
+
+  section "Formatting disk"
+  sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' < fdisk_partitioning | fdisk "$disk"
+
+  section "Getting paths"
+  boot_partition=$(question "What is the path to the EFI System partition?" "" "${disk}1")
+  root_partition=$(question "What is the path to the Linux root partition?" "" "${disk}2")
+
+  section "Formatting partitions"
+  mkfs.fat -F 16 "$boot_partition"
+  mkfs.ext4 "$root_partition"
+
+  mount "$root_partition" /mnt
+  mkdir /mnt/boot
+  mount "$boot_partition" /mnt/boot
+else
+  section "Assuming properly configured filesystem at /mnt"
 fi
-
-section "Formatting disk"
-sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' < fdisk_partitioning | fdisk "$disk"
-
-section "Getting paths"
-boot_partition=$(question "What is the path to the EFI System partition?" "" "${disk}1")
-root_partition=$(question "What is the path to the Linux root partition?" "" "${disk}2")
-
-section "Formatting partitions"
-mkfs.fat -F 16 "$boot_partition"
-mkfs.ext4 "$root_partition"
-
-mount "$root_partition" /mnt
-mkdir /mnt/boot
-mount "$boot_partition" /mnt/boot
 
 section "Installing"
 pacman-key --init && pacman-key --populate archlinux
 pacstrap /mnt $packages
 
 section "Generating fstab"
-genfstab -U /mnt >> /mnt/etc/fstab
+genfstab -U /mnt > /mnt/etc/fstab
 
 section "Check fstab"
 cat /mnt/etc/fstab
